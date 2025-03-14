@@ -109,7 +109,7 @@ Node* createSong(Record newsong)
 
 int storeSong(Node** pList)
 {
-	FILE* infile = fopen("musicPlayList.csv", "r");
+	FILE* infile = fopen("musicPlayList.csv", "w");
 	Node* pCur = *pList;
 
 	if (pCur != NULL)
@@ -197,6 +197,7 @@ int edit_song(Node* pList, Record newsong)
 	printf("Enter rating");
 	scanf("%d", pCur->record.rating);
 	fclose(infile);
+	return 0;
 }
 
 int pause()
@@ -205,6 +206,7 @@ int pause()
 	{
 		return 1;
 	}
+	return 0;
 }
 
 // delete new song and use plist instead for all other functions
@@ -218,6 +220,13 @@ int Display(Node* pList)
 	int counter = 0;
 	int choice = 0;
 	int options = 0;
+
+	if (pCur == NULL)
+	{
+		printf("The list is empty.\n");
+		fclose(infile);
+		return 0;
+	}
 
 	// if the next box in the list is not empty keep going 
 	if (pCur->pNext != NULL)
@@ -289,7 +298,7 @@ int Display(Node* pList)
 		} while (options != 3);
 	}
 	fclose(infile);
-
+	return 0;
 }
 
 int rate(Node* pList)
@@ -298,6 +307,12 @@ int rate(Node* pList)
 	Node* pCur = pList;
 	int answer = 0; // this is used to rate the song and to pick a song 
 
+	if (pCur == NULL)
+	{
+		printf("The list is empty.\n");
+		fclose(infile);
+		return 0;
+	}
 
 	// all i is doing is being a place holder for songs 1-5
 	// this displays all songs 
@@ -332,6 +347,12 @@ int play(Node* pList)
 	Node* pCur = pList;
 	int answer = 0;
 
+	if (pCur == NULL)
+	{
+		printf("The list is empty.\n");
+		fclose(infile);
+		return 0;
+	}
 
 	// this displays all songs 
 	for (int i = 1; pCur->pNext != NULL; i++)
@@ -451,11 +472,11 @@ void deleteSong(Node** pList)
 {
 	Node* pCur = *pList;
 	const char* newsong; // this is the song that the user wants to delete
-	// this is a safety net to make sure this function even runs
+
 	if (pCur == NULL)
 	{
-		printf("no song found");
-	
+		printf("The list is empty.\n");
+		return;
 	}
 
 	// this traverses through the list until it finds a song that matches
@@ -489,6 +510,13 @@ int sort(Node* pList)
 	int options = 0;
 	int swapped;
 	int sort;
+
+	if (pCur == NULL)
+	{
+		printf("The list is empty.\n");
+		return 0;
+	}
+
 	printf("what kind of sorting would you like to choose\n"); 
 	// this is just for the user asking them if they want to sort the songs.
 
@@ -548,6 +576,7 @@ int sort(Node* pList)
 			}
 		}
 	} while (options != 5);
+	return 0;
 }
 
 int shuffle(Node* pList)
@@ -555,10 +584,10 @@ int shuffle(Node* pList)
 	Node* pCur = pList;
 	int counter = 0;
 
-	// saftey check 
 	if (pCur == NULL)
 	{
-		printf("the playlsit is empty\n");
+		printf("The list is empty.\n");
+		return 0;
 	}
 
 	// this counts the number of songs in the list 
@@ -614,6 +643,7 @@ int shuffle(Node* pList)
 
 	// Free the allocated memory for the array
 	free(pointArray);
+	return 0;
 }
 
 
@@ -687,7 +717,7 @@ void main_menu(Node** pList)
 			printf("exit");
 			break;
 
-		defualt:
+		default:
 			printf("invalid option\n");
 			break; 
 		}
