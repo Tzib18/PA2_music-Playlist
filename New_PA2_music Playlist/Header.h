@@ -40,8 +40,8 @@ typedef struct Node
 
 void load(Node** pList);
 Node* createSong(Record newsong); 
-int storeSong(Node** pList);
-int edit_song(Node* pList, Record newsong);
+int storeSong(Node* pList);
+int edit_song(Node* pList);
 int pause();
 int Display(Node* pList);
 int rate(Node* pList);

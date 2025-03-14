@@ -90,7 +90,6 @@ void load(Node** pList)
 		count++;
 	}
 	fclose(infile);
-
 }
 
 Node* createSong(Record newsong)
@@ -114,16 +113,16 @@ int storeSong(Node** pList)
 
 	if (pCur != NULL)
 	{
-		while (pCur->pNext != NULL)
+		while (pCur != NULL)
 		{
 			// this stores the song into the file
-			fprintf(infile, "%s", pCur->record.artist);
-			fprintf(infile, "%s", pCur->record.album);
-			fprintf(infile, "%s", pCur->record.title);
-			fprintf(infile, "%s", pCur->record.genre);
-			fprintf(infile, "%d:%d", pCur->record.length.minutes, pCur->record.length.seconds);
-			fprintf(infile, "%d", pCur->record.times_played);
-			fprintf(infile, "%d", pCur->record.rating);
+			fprintf(infile, "%s,", pCur->record.artist);
+			fprintf(infile, "%s,", pCur->record.album);
+			fprintf(infile, "%s,", pCur->record.title);
+			fprintf(infile, "%s,", pCur->record.genre);
+			fprintf(infile, "%d:%d,", pCur->record.length.minutes, pCur->record.length.seconds);
+			fprintf(infile, "%d,", pCur->record.times_played);
+			fprintf(infile, "%d\n", pCur->record.rating);
 
 			pCur = pCur->pNext;
 		}
@@ -156,29 +155,25 @@ int edit_song(Node* pList, Record newsong)
 			// once it finds the songs that match it displays them to the user 
 			matches[counter] = pCur;
 			counter++;
-			printf("title: %s\n", counter, pCur->record.title);
-			printf("album: %s\n", counter, pCur->record.album);
-			printf("genre: %s\n", counter, pCur->record.genre);
-			printf("length: %d:%d\n", counter, pCur->record.length.minutes, pCur->record.length.seconds);
-			printf("times played: %d\n", counter, pCur->record.times_played);
-			printf("rating: %d\n", counter, pCur->record.rating);
+			printf("title: %s\n", pCur->record.title);
+			printf("album: %s\n", pCur->record.album);
+			printf("genre: %s\n", pCur->record.genre);
+			printf("length: %d:%d\n", pCur->record.length.minutes, pCur->record.length.seconds);
+			printf("times played: %d\n", pCur->record.times_played);
+			printf("rating: %d\n", pCur->record.rating);
 
 		}
 		pCur = pCur->pNext;
 	}
 	//this prompts the user to edit the song they want 
-	if (choice > 1)
+	if (counter > 1)
 	{
 		printf("which song would you like to edit: ");
-		scanf("%s", &choice);
+		scanf("%d", &choice);
 	}
 
-	pCur = pList;
+	pCur = matches[choice - 1];
 
-	while (strcmp(pCur->record.title, newsong.title) == 0)
-	{
-		pCur = pCur->pNext;
-	}
 	printf("ENTER TITLE: ");
 	scanf("%s", pCur->record.title);
 
@@ -189,13 +184,13 @@ int edit_song(Node* pList, Record newsong)
 	scanf("%s", pCur->record.genre);
 
 	printf("ENTER length of song: ");
-	scanf("%d %d", pCur->record.length.minutes, pCur->record.length.seconds);
+	scanf("%d %d", &pCur->record.length.minutes, &pCur->record.length.seconds);
 
 	printf("Enter amount of times played: ");
-	scanf("%d", pCur->record.times_played);
+	scanf("%d", &pCur->record.times_played);
 
 	printf("Enter rating");
-	scanf("%d", pCur->record.rating);
+	scanf("%d", &pCur->record.rating);
 	fclose(infile);
 	return 0;
 }
@@ -245,14 +240,17 @@ int Display(Node* pList)
 				if (pCur != NULL)
 				{
 					printf("printing all records\n");
-					printf("ARTIST: %S\n", pCur->record.artist);
-					printf("ALBUM: %S\n", pCur->record.album);
-					printf("TITLE: %s\n", pCur->record.title);
-					printf("GENRE: %s\n", pCur->record.genre);
-					printf("TIME: %d:%d\n", pCur->record.length);
-					printf("TIMES PLAYED: %d\n", pCur->record.times_played);
-					printf("Rating: %d\n", pCur->record.rating);
-					pCur = pCur->pNext;
+					while (pCur != NULL)
+					{
+						printf("ARTIST: %s\n", pCur->record.artist);
+						printf("ALBUM: %s\n", pCur->record.album);
+						printf("TITLE: %s\n", pCur->record.title);
+						printf("GENRE: %s\n", pCur->record.genre);
+						printf("TIME: %d:%d\n", pCur->record.length.minutes, pCur->record.length.seconds);
+						printf("TIMES PLAYED: %d\n", pCur->record.times_played);
+						printf("Rating: %d\n", pCur->record.rating);
+						pCur = pCur->pNext;
+					}
 				}
 
 				break;
@@ -316,9 +314,9 @@ int rate(Node* pList)
 
 	// all i is doing is being a place holder for songs 1-5
 	// this displays all songs 
-	for (int i = 1; pCur->pNext != NULL; i++)
+	for (int i = 1; pCur != NULL; i++)
 	{
-		printf("%d : %s", i, pCur->record.title);
+		printf("%d : %s\n", i, pCur->record.title);
 		pCur = pCur->pNext;
 	}
 	pCur = pList;
@@ -326,7 +324,7 @@ int rate(Node* pList)
 	scanf("%d", &answer);
 
 	// this itterates to what song they pick
-	for (int i = 1; pCur->pNext != NULL; i++)
+	for (int i = 1; pCur != NULL; i++)
 	{
 		if (i == answer)
 		{
@@ -355,9 +353,9 @@ int play(Node* pList)
 	}
 
 	// this displays all songs 
-	for (int i = 1; pCur->pNext != NULL; i++)
+	for (int i = 1; pCur != NULL; i++)
 	{
-		printf("%d : %s", i, pCur->record.title);
+		printf("%d : %s\n", i, pCur->record.title);
 		pCur = pCur->pNext;
 	}
 	pCur = pList;
@@ -365,7 +363,7 @@ int play(Node* pList)
 	scanf("%d", &answer);
 
 	// this moves to what song they pick
-	for (int i = 1; pCur->pNext != NULL; i++)
+	for (int i = 1; pCur != NULL; i++)
 	{
 		if (i == answer)
 		{
@@ -374,7 +372,7 @@ int play(Node* pList)
 		pCur = pCur->pNext;
 	}
 
-	while (pCur->pNext != NULL)
+	while (pCur != NULL)
 	{
 		printf("title: %s\n", pCur->record.title);
 		printf("album: %s\n", pCur->record.album);
@@ -382,7 +380,7 @@ int play(Node* pList)
 		printf("length: %d:%d\n", pCur->record.length.minutes, pCur->record.length.seconds);
 		printf("times played: %d\n", pCur->record.times_played);
 		printf("rating: %d\n", pCur->record.rating);
-		Sleep(3); // this is to pause the program for 3 seconds
+		Sleep(3000); // this is to pause the program for 3 seconds
 		system("cls");
 
 	}
@@ -438,7 +436,7 @@ void insertsong(Node** pList)
 	// doing the same thing but scanf lets the user put in times, ratings and times played
 	// for the integers 
 	printf("Enter song length (minutes seconds): ");
-	scanf("%d:%d", &newsong.length.minutes, &newsong.length.seconds);
+	scanf("%d %d", &newsong.length.minutes, &newsong.length.seconds);
 
 	printf("Enter number of times played: ");
 	scanf("%d", &newsong.times_played);
@@ -471,7 +469,7 @@ void insertsong(Node** pList)
 void deleteSong(Node** pList)
 {
 	Node* pCur = *pList;
-	const char* newsong; // this is the song that the user wants to delete
+	char newsong[100]; // this is the song that the user wants to delete
 
 	if (pCur == NULL)
 	{
@@ -479,12 +477,18 @@ void deleteSong(Node** pList)
 		return;
 	}
 
+	printf("Enter the title of the song to delete: ");
+	scanf("%s", newsong);
+
 	// this traverses through the list until it finds a song that matches
 	while (pCur != NULL && strcmp(pCur->record.title, newsong) != 0)
 	{
 		pCur = pCur->pNext;
+	}
 
-		// if a node is found delete it
+	// if a node is found delete it
+	if (pCur != NULL)
+	{
 		if (pCur->pPrev != NULL)
 		{
 			pCur->pPrev->pNext = pCur->pNext;
@@ -497,10 +501,13 @@ void deleteSong(Node** pList)
 		{
 			pCur->pNext->pPrev = pCur->pPrev;
 		}
+		free(pCur);
+		printf("Deleted song: %s\n", newsong);
 	}
-	free(pCur);
-	printf("delted song: ");
-
+	else
+	{
+		printf("Song not found: %s\n", newsong);
+	}
 }
 
 // get help with this 
@@ -524,12 +531,13 @@ int sort(Node* pList)
 	printf("2. sort by album\n");
 	printf("3. sort by rating\n");
 	printf("4. sort by times played\n");
-	printf("5. exit sorting"); 
+	printf("5. exit sorting\n"); 
 	printf("Enter choice: []"); 
 	scanf("%d", &options);
 
 	do
 	{
+		swapped = 0;
 		while (pCur->pNext != NULL)
 		{
 
@@ -537,33 +545,26 @@ int sort(Node* pList)
 			{
 			case 1:
 				// this is sort int just holds the sorting results 
-				printf("sorting by artist");
-				sort = (strcmp(pCur->record.title, pCur->record.title));
-
-
-
+				printf("sorting by artist\n");
+				sort = (strcmp(pCur->record.artist, pCur->pNext->record.artist));
 				break;
 			case 2:
-				printf("sorting by albumn\n");
-				sort = (strcmp(pCur->record.album, pCur->record.album));
-
-
+				printf("sorting by album\n");
+				sort = (strcmp(pCur->record.album, pCur->pNext->record.album));
 				break; 
 			case 3:
 				printf("sorting by rating\n");
 				// sorting by rating from greatest to least rated 
 				sort = (pCur->record.rating - pCur->pNext->record.rating);// gets next node and the rating of it
-
-
 				break;
-				case 4:
+			case 4:
 				printf("sorting by times played\n");
 				// sorting by greatest to least times played 
 				sort = (pCur->record.times_played - pCur->pNext->record.times_played); // gets mext node and the times played of it 
-
 				break;
-				case 5:
-					printf("exiting sorting"); 
+			case 5:
+				printf("exiting sorting\n"); 
+				break;
 			}
 
 			if (sort > 0)
@@ -574,8 +575,10 @@ int sort(Node* pList)
 				swapped = 1;
 				// swapped equaling 1 means a swap occurred 
 			}
+			pCur = pCur->pNext;
 		}
-	} while (options != 5);
+		pCur = pList;
+	} while (swapped);
 	return 0;
 }
 
