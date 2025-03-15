@@ -67,12 +67,14 @@ void load(Node** pList)
 
 		Node* pMem = (Node*)malloc(sizeof(Node));// error finally went away with taking off pointer 
 
-		memcpy(&(pMem->record), &pCur, sizeof(Record)); // copies the record node of my pcur and puts it into 
-		// the pMem which points to the record struct 
+		
 		
 		// this is to create node of the song 
 		if (pMem != NULL)
 		{
+			memcpy(&(pMem->record), &pCur, sizeof(Record)); // copies the record node of my pcur and puts it into 
+			// the pMem which points to the record struct 
+
 			if (*pList == NULL)
 			{
 				*pList = pMem;
@@ -81,11 +83,13 @@ void load(Node** pList)
 			}
 			else
 			{
-				pHead->pPrev = pMem;
 				pMem->pNext = *pList;
 				pMem->pPrev = NULL;
-				pHead = pMem;
+				(*pList)->pPrev = pMem;
+				*pList = pMem;
+
 			}
+
 		}
 		count++;
 	}
@@ -146,6 +150,12 @@ int edit_song(Node* pList, Record newsong)
 
 	//strcpy(newsong.artist, buffer);	
 	// dont know if this is right or needed tbh
+	if (pCur == NULL)
+	{
+		printf("The list is empty.\n");
+		return 0;
+	}
+	// find all songs that match the artists
 	while (pCur != NULL)
 	{
 		// trying to finding all songs that match the same artist
@@ -170,10 +180,27 @@ int edit_song(Node* pList, Record newsong)
 	{
 		printf("which song would you like to edit: ");
 		scanf("%d", &choice);
+		if (choice < 1 || choice > counter)
+		{
+			printf("invalid choice try again");
+		}
+	}
+	if (counter == 1)
+	{
+		pCur = matches[0];
+
+	}
+	else {
+		printf("no matches were found");
+	}
+	// saftey code 
+	if (pCur == NULL)
+	{
+		printf("song not found\n");
+		return 0;
 	}
 
-	pCur = matches[choice - 1];
-
+	// edit songs that were selected 
 	printf("ENTER TITLE: ");
 	scanf("%s", pCur->record.title);
 
@@ -191,6 +218,7 @@ int edit_song(Node* pList, Record newsong)
 
 	printf("Enter rating");
 	scanf("%d", &pCur->record.rating);
+
 	fclose(infile);
 	return 0;
 }
@@ -219,7 +247,6 @@ int Display(Node* pList)
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		fclose(infile);
 		return 0;
 	}
 
@@ -227,7 +254,11 @@ int Display(Node* pList)
 	if (pCur->pNext != NULL)
 	{
 		// gave them options to pick which one they want 
-		printf("which one would you like to choose:\n1.print all records.\n2. print all records that match an artist\n\nENTER: \n");
+		printf("which one would you like to choose:\n"); 
+		printf("1.print all records.\n"); 
+		printf("2.print all records that match an artist\n\n");
+		printf("ENTER: \n");
+
 		scanf("%d", &options);
 
 		do
@@ -301,14 +332,14 @@ int Display(Node* pList)
 
 int rate(Node* pList)
 {
-	FILE* infile = fopen("musicPlayList.csv", "r");
+	// FILE* infile = fopen("musicPlayList.csv", "r");
 	Node* pCur = pList;
 	int answer = 0; // this is used to rate the song and to pick a song 
+	int counter = 0;
 
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		fclose(infile);
 		return 0;
 	}
 
@@ -318,10 +349,19 @@ int rate(Node* pList)
 	{
 		printf("%d : %s\n", i, pCur->record.title);
 		pCur = pCur->pNext;
+		counter++; 
 	}
-	pCur = pList;
-	printf("what song you want");
+
+	printf("what song you want to raet: ");
 	scanf("%d", &answer);
+
+	// making sure the user cant mess up. 
+	if (answer < 1 || answer > counter)
+	{
+		printf("invalid choice try again");
+	}
+
+	 pCur = pList; // resets current to the head of the list
 
 	// this itterates to what song they pick
 	for (int i = 1; pCur != NULL; i++)
@@ -333,9 +373,22 @@ int rate(Node* pList)
 		pCur = pCur->pNext;
 	}
 
+	if (pCur == NULL)
+	{
+		printf("song not found\n");
+		return 0;
+	}
+
 	printf(" what would you rate this song: (1-5)\n");
 	scanf("%d", &answer);
+
+	if (answer < 1 || answer > 5)
+	{
+		printf("invalid choice try again");
+	}
+
 	pCur->record.rating = answer;
+	printf("your rating updated succefully"); 
 	return answer;
 }
 
@@ -470,15 +523,18 @@ void deleteSong(Node** pList)
 {
 	Node* pCur = *pList;
 	char newsong[100]; // this is the song that the user wants to delete
-
+	
+	// safety code 
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
 		return;
 	}
 
+	// asks and receives input from the user 
 	printf("Enter the title of the song to delete: ");
-	scanf("%s", newsong);
+	fgets(newsong, 100, stdin);
+	newsong[strcspn(newsong, "\n")] = '\0'; // this removes the new line \n 
 
 	// this traverses through the list until it finds a song that matches
 	while (pCur != NULL && strcmp(pCur->record.title, newsong) != 0)
@@ -582,9 +638,9 @@ int sort(Node* pList)
 	return 0;
 }
 
-int shuffle(Node* pList)
+int shuffle(Node** pList) // changed it to a doubly node 
 {
-	Node* pCur = pList;
+	Node* pCur = *pList;
 	int counter = 0;
 
 	if (pCur == NULL)
@@ -600,9 +656,10 @@ int shuffle(Node* pList)
 		pCur = pCur->pNext;
 	}
 
-	// creats nodes of pointer arrays for the songs to be tracked. 
+	// creates nodes of pointer arrays for the songs to be tracked. 
 	Node** pointArray = (Node**)malloc(counter * sizeof(Node*));
-	pCur = pList; // Reset current to the head of the list
+
+	pCur = *pList; // Reset current to the head of the list
 
 	for (int i = 0; i < counter; i++)
 	{
@@ -610,7 +667,7 @@ int shuffle(Node* pList)
 		pCur = pCur->pNext; // Move to the next node and repeats
 	}
 
-	// shuffles the playlsit based on time 
+	// shuffles the playlist based on time 
 	srand(time(NULL));
 
 	// traversing through the songs 
@@ -633,11 +690,11 @@ int shuffle(Node* pList)
 	pointArray[0]->pPrev = NULL;
 
 	// Update the head 
-	pList = pointArray[0];
+	*pList = pointArray[0];
 
 	// printing out the shuffled songs
 	printf("shuffled playlist new order: \n");
-	pCur = pList;
+	pCur = *pList;
 	while (pCur != NULL) // this is just to print out the songs in the new order
 	{
 		printf("title: %s\n", pCur->record.title);
@@ -713,7 +770,7 @@ void main_menu(Node** pList)
 			break;
 
 		case 10:
-			shuffle(*pList);
+			shuffle(pList);
 			break;
 
 		case 11:
