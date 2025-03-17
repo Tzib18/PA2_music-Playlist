@@ -110,7 +110,7 @@ Node* createSong(Record newsong)
 
 
 
-int storeSong(Node** pList)
+void storeSong(Node** pList)
 {
 	FILE* infile = fopen("musicPlayList.csv", "w");
 	Node* pCur = *pList;
@@ -132,10 +132,9 @@ int storeSong(Node** pList)
 		}
 	}
 	fclose(infile);
-	return 0;
 }
 
-int edit_song(Node* pList, Record newsong)
+void edit_song(Node* pList, Record newsong)
 {
 	FILE* infile = fopen("musicPlayList.csv", "r");
 	Node* pCur = pList;
@@ -153,7 +152,6 @@ int edit_song(Node* pList, Record newsong)
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		return 0;
 	}
 	// find all songs that match the artists
 	while (pCur != NULL)
@@ -197,7 +195,6 @@ int edit_song(Node* pList, Record newsong)
 	if (pCur == NULL)
 	{
 		printf("song not found\n");
-		return 0;
 	}
 
 	// edit songs that were selected 
@@ -220,7 +217,6 @@ int edit_song(Node* pList, Record newsong)
 	scanf("%d", &pCur->record.rating);
 
 	fclose(infile);
-	return 0;
 }
 
 int pause()
@@ -234,7 +230,7 @@ int pause()
 
 // delete new song and use plist instead for all other functions
 // i took out record new song struct and replace missing field for pList should work but not sure
-int Display(Node* pList)
+void Display(Node* pList)
 {
 	FILE* infile = fopen("musicPlayList.csv", "r");
 	Node* pCur = pList;
@@ -247,7 +243,6 @@ int Display(Node* pList)
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		return 0;
 	}
 
 	// if the next box in the list is not empty keep going 
@@ -327,7 +322,6 @@ int Display(Node* pList)
 		} while (options != 3);
 	}
 	fclose(infile);
-	return 0;
 }
 
 int rate(Node* pList)
@@ -392,7 +386,7 @@ int rate(Node* pList)
 	return answer;
 }
 
-int play(Node* pList)
+void play(Node* pList)
 {
 	FILE* infile = fopen("musicPlayList.csv", "r");
 	Node* pCur = pList;
@@ -402,7 +396,6 @@ int play(Node* pList)
 	{
 		printf("The list is empty.\n");
 		fclose(infile);
-		return 0;
 	}
 
 	// this displays all songs 
@@ -437,8 +430,7 @@ int play(Node* pList)
 		system("cls");
 
 	}
-
-	return answer;
+	fclose(infile); 
 }
 
 // inset function itself 
@@ -567,7 +559,7 @@ void deleteSong(Node** pList)
 }
 
 // get help with this 
-int sort(Node* pList)
+void sort(Node* pList)
 {
 	Node* pCur = pList;
 	int options = 0;
@@ -577,68 +569,76 @@ int sort(Node* pList)
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		return 0;
 	}
 
-	printf("what kind of sorting would you like to choose\n"); 
-	// this is just for the user asking them if they want to sort the songs.
 
+	printf("what kind of sorting would you like to choose\n");
+	// this is just for the user asking them if they want to sort the songs.
+	
 	printf("1. sort by artist\n");
 	printf("2. sort by album\n");
 	printf("3. sort by rating\n");
 	printf("4. sort by times played\n");
-	printf("5. exit sorting\n"); 
-	printf("Enter choice: []"); 
+	printf("5. exit sorting\n");
+	printf("Enter choice: []");
 	scanf("%d", &options);
 
-	do
+	if (options < 1 || options > 5)
 	{
-		swapped = 0;
-		while (pCur->pNext != NULL)
+		printf("invalid choice try again"); 
+	}
+
+	if (options == 5)
+	{
+		printf("exiting sorting function"); 
+	}
+		do
 		{
-
-			switch (options)
+			swapped = 0;
+			while (pCur->pNext != NULL && pCur != NULL)
 			{
-			case 1:
-				// this is sort int just holds the sorting results 
-				printf("sorting by artist\n");
-				sort = (strcmp(pCur->record.artist, pCur->pNext->record.artist));
-				break;
-			case 2:
-				printf("sorting by album\n");
-				sort = (strcmp(pCur->record.album, pCur->pNext->record.album));
-				break; 
-			case 3:
-				printf("sorting by rating\n");
-				// sorting by rating from greatest to least rated 
-				sort = (pCur->record.rating - pCur->pNext->record.rating);// gets next node and the rating of it
-				break;
-			case 4:
-				printf("sorting by times played\n");
-				// sorting by greatest to least times played 
-				sort = (pCur->record.times_played - pCur->pNext->record.times_played); // gets mext node and the times played of it 
-				break;
-			case 5:
-				printf("exiting sorting\n"); 
-				break;
-			}
 
-			if (sort > 0)
-			{
-				Record pMem = pCur->record;
-				pCur->record = pCur->pNext->record;
-				pCur->pNext->record = pMem;
-				swapped = 1;
-				// swapped equaling 1 means a swap occurred 
+				switch (options)
+				{
+				case 1:
+					// this is sort int just holds the sorting results 
+					printf("sorting by artist\n");
+					sort = (strcmp(pCur->record.artist, pCur->pNext->record.artist));
+					break;
+				case 2:
+					printf("sorting by album\n");
+					sort = (strcmp(pCur->record.album, pCur->pNext->record.album));
+					break;
+				case 3:
+					printf("sorting by rating\n");
+					// sorting by rating from greatest to least rated 
+					sort = (pCur->record.rating - pCur->pNext->record.rating);// gets next node and the rating of it
+					break;
+				case 4:
+					printf("sorting by times played\n");
+					// sorting by greatest to least times played 
+					sort = (pCur->record.times_played - pCur->pNext->record.times_played); // gets mext node and the times played of it 
+					break;
+				case 5:
+					printf("exiting sorting\n");
+					break;
+				}
+
+				if (sort > 0)
+				{
+					Record pMem = pCur->record;
+					pCur->record = pCur->pNext->record;
+					pCur->pNext->record = pMem;
+					swapped = 1;
+					// swapped equaling 1 means a swap occurred 
+				}
+				pCur = pCur->pNext;
 			}
-			pCur = pCur->pNext;
-		}
-		pCur = pList;
-	} while (swapped);
-	return 0;
+			pCur = pList;
+		} while (swapped);
 }
 
-int shuffle(Node** pList) // changed it to a doubly node 
+void shuffle(Node** pList) // changed it to a doubly node 
 {
 	Node* pCur = *pList;
 	int counter = 0;
@@ -646,7 +646,6 @@ int shuffle(Node** pList) // changed it to a doubly node
 	if (pCur == NULL)
 	{
 		printf("The list is empty.\n");
-		return 0;
 	}
 
 	// this counts the number of songs in the list 
@@ -703,7 +702,6 @@ int shuffle(Node** pList) // changed it to a doubly node
 
 	// Free the allocated memory for the array
 	free(pointArray);
-	return 0;
 }
 
 

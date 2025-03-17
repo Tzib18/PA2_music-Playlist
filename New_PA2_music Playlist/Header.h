@@ -40,17 +40,17 @@ typedef struct Node
 
 void load(Node** pList);
 Node* createSong(Record newsong); 
-int storeSong(Node** pList);
-int edit_song(Node* pList, Record newsong);
+void storeSong(Node** pList);
+void edit_song(Node* pList, Record newsong);
 int pause();
-int Display(Node* pList);
+void Display(Node* pList);
 int rate(Node* pList);
-int play(Node* pList);
+void play(Node* pList);
 int insert(Node** pList, Record newsong);
 void insertsong(Node** pList);
 void deleteSong(Node** pList); 
-int sort(Node* pList);
-int shuffle(Node** pList);
+void sort(Node* pList);
+void shuffle(Node** pList);
 void main_menu(Node** pList);
 
 
